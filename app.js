@@ -1,8 +1,9 @@
 'use strict';
 
-let database = [
-    {'assingment' : 'Estudar JS', 'status' : ''}
-]
+let database = [];
+
+const getDatabase = () => JSON.parse(localStorage.getItem('todoList')) ?? [];
+const setDatabase = (database) => localStorage.setItem('todoList', JSON.stringify(database));
 
 const createItem = (assingment, status, index) => {
     const item = document.createElement('label');
@@ -24,6 +25,7 @@ const clearAssingments = () => {
 
 const attScreen = () => {
     clearAssingments();
+    const database = getDatabase();
     database.forEach((item, index) => createItem(item.assingment, item.status, index));
 }
 
@@ -31,14 +33,25 @@ const insertItem = (event) => {
     const key = event.key;
     const text = event.target.value;
     if(key === 'Enter') {
-        database.push({'assingment' : text, 'status' : ''})
+        const database = getDatabase();
+        database.push({'assingment' : text, 'status' : ''});
+        setDatabase(database);
         attScreen();
         event.target.value = '';
     }
 }
 
 const removeItem = (index) => {
+    const database = getDatabase();
     database.splice(index, 1);
+    setDatabase(database);
+    attScreen();
+}
+
+const attItem = (index) => {
+    const database = getDatabase();
+    database[index].status =  database[index].status === '' ? 'checked' : '';
+    setDatabase(database);
     attScreen();
 }
 
@@ -47,6 +60,9 @@ const clickItem = (event) => {
     if(element.type === 'button') {
         const index = element.dataset.index;
         removeItem(index);
+    } else if (element.type === 'checkbox') {
+        const index = element.dataset.index;
+        attItem(index);
     }
 }
 
